@@ -1,0 +1,25 @@
+table 'Time Period'
+	lineageTag: ffd6eca5-f207-4635-b4fd-00816f19fcea
+
+	/// Time-period selector for Sales measures. Pick a value to recalculate whichever measure is on the visual as Current, Month-to-Date, or Year-to-Date.
+	calculationGroup
+		precedence: 1
+
+		/// No time transformation. The measure as normally filtered.
+		calculationItem Current = SELECTEDMEASURE()
+
+		/// True month-to-date: from day 1 of the latest month with Sales activity through the exact latest invoice date, overriding any other Date filter. Now meaningful because Sales carries a real daily Invoice Date.
+		calculationItem MTD =
+				VAR _MaxInvoiceDate = CALCULATE(MAX(Sales[Invoice Date]), ALL(Sales))
+				VAR _MonthStart = DATE(YEAR(_MaxInvoiceDate), MONTH(_MaxInvoiceDate), 1)
+				RETURN CALCULATE(SELECTEDMEASURE(), ALL('Date'), 'Date'[Date] >= _MonthStart && 'Date'[Date] <= _MaxInvoiceDate)
+
+		/// Sum of all months from January through the latest month in the current filter context, for that context's year.
+		calculationItem YTD = CALCULATE(SELECTEDMEASURE(), DATESYTD('Date'[Date]))
+
+	column 'Time Period'
+		dataType: string
+		lineageTag: 5dbefa3c-05ed-4da0-bbb4-65ae9a6bfd6d
+
+	partition 'Partition_Time Period' = calculationGroup
+

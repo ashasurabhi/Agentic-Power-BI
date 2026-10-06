@@ -1,0 +1,16 @@
+relationship Store_DistrictID_District_DistrictID
+	fromColumn: Store.DistrictID
+	toColumn: District.DistrictID
+
+relationship Sales_LocationID_Store_LocationID
+	fromColumn: Sales.LocationID
+	toColumn: Store.LocationID
+
+relationship Sales_ItemID_Item_ItemID
+	fromColumn: Sales.ItemID
+	toColumn: Item.ItemID
+
+relationship 'Sales_Invoice Date_Date_Date'
+	fromColumn: Sales.'Invoice Date'
+	toColumn: Date.Date
+

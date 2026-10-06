@@ -1,0 +1,35 @@
+/// US cities where campaigns ran. One row per city.
+table Location
+	lineageTag: 8ade61e7-cf2e-40ef-92ba-4347370bfb60
+
+	column 'Location Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		displayFolder: Keys
+		lineageTag: d5a594c4-b0ec-419e-a218-9fbea926773e
+		summarizeBy: none
+		sourceColumn: Location Key
+
+	/// City where the campaign ran.
+	column City
+		dataType: string
+		lineageTag: fe40859e-4d06-4790-9c11-d1df97875904
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: City
+
+	partition Location = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "marketing_campaign_dataset.csv"), [Delimiter = ",", Columns = 16, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Members = List.Sort(List.Distinct(Promoted[Location])),
+				    Dimension = Table.FromColumns({List.Numbers(1, List.Count(Members)), Members}, {"Location Key", "City"}),
+				    Typed = Table.TransformColumnTypes(Dimension, {{"Location Key", Int64.Type}, {"City", type text}})
+				in
+				    Typed
+

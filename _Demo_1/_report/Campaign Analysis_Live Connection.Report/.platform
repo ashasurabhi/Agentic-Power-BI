@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Campaign Analysis_Live Connection"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "0f68f566-8758-4808-a023-4cda2457d43b"
+  }
+}

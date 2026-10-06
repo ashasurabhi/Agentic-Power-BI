@@ -1,0 +1,34 @@
+/// Marketing channel the campaign ran on (Email, Facebook, Google Ads, Instagram, Website, YouTube). One row per channel.
+table Channel
+	lineageTag: 95cd3f53-4703-49f0-bc02-1144517a41cc
+
+	column 'Channel Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		displayFolder: Keys
+		lineageTag: aafde46c-7481-4204-9753-ed9210c74a81
+		summarizeBy: none
+		sourceColumn: Channel Key
+
+	/// Platform or medium used to deliver the campaign. Not the same as Campaign Type: a Display campaign can run on any channel.
+	column Channel
+		dataType: string
+		lineageTag: 41b836e3-05d8-4e52-8740-ec939ed71778
+		summarizeBy: none
+		sourceColumn: Channel
+
+	partition Channel = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "marketing_campaign_dataset.csv"), [Delimiter = ",", Columns = 16, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Members = List.Sort(List.Distinct(Promoted[Channel_Used])),
+				    Dimension = Table.FromColumns({List.Numbers(1, List.Count(Members)), Members}, {"Channel Key", "Channel"}),
+				    Typed = Table.TransformColumnTypes(Dimension, {{"Channel Key", Int64.Type}, {"Channel", type text}})
+				in
+				    Typed
+

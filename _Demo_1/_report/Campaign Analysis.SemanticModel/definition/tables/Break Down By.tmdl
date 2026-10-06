@@ -1,0 +1,49 @@
+table 'Break Down By'
+	lineageTag: 9d5c4550-86a0-41c2-a8a6-d15a5ecfa613
+
+	column 'Break Down By Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5c0b561c-4211-4bd1-a61c-ae4d4c81e7d0
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+	column 'Break Down By Fields'
+		dataType: string
+		isHidden
+		lineageTag: 2a85bcbe-6945-4cc9-85ee-f56d1ad4f2b1
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Break Down By Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+	column 'Break Down By'
+		dataType: string
+		lineageTag: 6ddf96cb-1f82-44cf-9ed9-ccb27417be35
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Break Down By Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Break Down By Fields'
+
+	partition 'Break Down By' = calculated
+		mode: import
+		source =
+				{
+				    ("Channel", NAMEOF('Channel'[Channel]), 0),
+				    ("Campaign Type", NAMEOF('Campaign Type'[Campaign Type]), 1),
+				    ("Target Audience", NAMEOF('Target Audience'[Target Audience]), 2),
+				    ("Customer Segment", NAMEOF('Customer Segment'[Customer Segment]), 3),
+				    ("City", NAMEOF('Location'[City]), 4),
+				    ("Language", NAMEOF('Language'[Language]), 5),
+				    ("Company", NAMEOF('Company'[Company]), 6),
+				    ("Duration (days)", NAMEOF('Campaigns'[Duration Days]), 7)
+				}
+

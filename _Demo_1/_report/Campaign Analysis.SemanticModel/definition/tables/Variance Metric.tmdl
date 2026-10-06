@@ -1,0 +1,46 @@
+table 'Variance Metric'
+	lineageTag: 82534b3f-2e87-46ba-828e-436b77e5d8c4
+
+	column 'Variance Metric Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 28f7e2f5-66ae-46f9-9f73-13d4d6d1dcf2
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+	column 'Variance Metric Fields'
+		dataType: string
+		isHidden
+		lineageTag: 6a6a51af-7a18-46f0-a43f-b6c81d34362c
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Variance Metric Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+	column 'Variance Metric'
+		dataType: string
+		lineageTag: b0306f2d-1c7a-412c-9216-d0b26c4522cb
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Variance Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Variance Metric Fields'
+
+	partition 'Variance Metric' = calculated
+		mode: import
+		source =
+				{
+				    ("ROI vs Portfolio (%)", NAMEOF('Campaigns'[ROI vs Portfolio (%)]), 0),
+				    ("Click-Through Rate vs Portfolio (%)", NAMEOF('Campaigns'[Click-Through Rate vs Portfolio (%)]), 1),
+				    ("Conversion Rate vs Portfolio (%)", NAMEOF('Campaigns'[Conversion Rate vs Portfolio (%)]), 2),
+				    ("Engagement Score vs Portfolio (%)", NAMEOF('Campaigns'[Engagement Score vs Portfolio (%)]), 3),
+				    ("Cost per Click vs Portfolio (%)", NAMEOF('Campaigns'[Cost per Click vs Portfolio (%)]), 4)
+				}
+

@@ -1,0 +1,163 @@
+/// Generated calendar table at daily grain, 2025-2026, marked as the model's date table. Sales is monthly grain (one row per Item x Store x Reporting Period, all first-of-month), so only the first-of-month rows in this table ever have matching Sales activity — dragging a mid-month Day/Day of Week field onto a Sales visual will correctly show blank for those days.
+table Date
+	lineageTag: 0e018f13-7805-4b9f-9362-cf0b501f17ce
+	dataCategory: Time
+
+	/// Integer surrogate in yyyymmdd form. Used for the relationship to Sales.
+	column DateKey
+		dataType: int64
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: 963e216c-1bcd-4c36-8f62-63e4373b6fa6
+		summarizeBy: none
+		sourceColumn: DateKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		lineageTag: 5aac0f53-c725-4d86-a533-1783d7077ec5
+		summarizeBy: none
+		sourceColumn: Year
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Quarter Number'
+		dataType: int64
+		isHidden
+		lineageTag: eb09b141-0a6f-42f9-bb97-c37694e5ebe9
+		summarizeBy: none
+		sourceColumn: Quarter Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		dataType: string
+		lineageTag: a83c1f9e-16f5-4a2b-846e-eb5db433b24e
+		summarizeBy: none
+		sourceColumn: Quarter
+		sortByColumn: 'Quarter Number'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Quarter'
+		dataType: string
+		lineageTag: 60fad609-cf47-40eb-8ffa-7a24bf001ecc
+		summarizeBy: none
+		sourceColumn: Year Quarter
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		lineageTag: a577e9b8-67fb-413b-be93-f22655101412
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Month
+		dataType: string
+		lineageTag: 0158e503-74e9-471b-9de0-37fd3c1b7097
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month'
+		dataType: string
+		lineageTag: d4800869-e5f1-480d-b002-e17441b1fb46
+		summarizeBy: none
+		sourceColumn: Year Month
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calendar date.
+	column Date
+		dataType: dateTime
+		isUnique
+		formatString: dd mmm yyyy
+		lineageTag: 969f5739-dc79-418d-b5f0-35e9c72dd606
+		sourceColumn: Date
+
+	column 'Day of Week Number'
+		dataType: int64
+		isHidden
+		lineageTag: a2e4ff05-40b2-4993-85ee-e272377e9f3f
+		summarizeBy: none
+		sourceColumn: Day of Week Number
+
+	column 'Day of Week'
+		dataType: string
+		lineageTag: 6945b4b2-0170-4cfc-9a82-117aadaf4f1e
+		sourceColumn: Day of Week
+		sortByColumn: 'Day of Week Number'
+
+	/// Day of the month (1-31).
+	column Day
+		dataType: int64
+		lineageTag: ead2fb0a-b216-42c4-b539-09fd2efd256f
+		summarizeBy: none
+		sourceColumn: Day
+
+	hierarchy 'Calendar Hierarchy'
+		lineageTag: 8adc7ba5-6d81-4367-8c15-6c29a8264b63
+
+		level Year
+			lineageTag: 63065f1a-a82f-49f3-955b-c4116e32ec9e
+			column: Year
+
+		level 'Year Quarter'
+			lineageTag: 5e2ce24d-fd9c-4d09-9b0a-72425f141a85
+			column: 'Year Quarter'
+
+		level 'Year Month'
+			lineageTag: 1c311bda-0f43-4747-b497-59ca7661b8f9
+			column: 'Year Month'
+
+		level Date
+			lineageTag: 6a644466-4482-46b8-ab7b-659600443881
+			column: Date
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    StartDate = #date(2025,1,1),
+				    EndDate = #date(2026,12,31),
+				    DayCount = Duration.Days(EndDate - StartDate) + 1,
+				    DateList = List.Dates(StartDate, DayCount, #duration(1,0,0,0)),
+				    ToTable = Table.FromList(DateList, Splitter.SplitByNothing(), {"Date"}),
+				    ChangedType = Table.TransformColumnTypes(ToTable,{{"Date", type date}}),
+				    AddDateKey = Table.AddColumn(ChangedType, "DateKey", each Date.Year([Date])*10000 + Date.Month([Date])*100 + Date.Day([Date]), Int64.Type),
+				    AddYear = Table.AddColumn(AddDateKey, "Year", each Date.Year([Date]), Int64.Type),
+				    AddQuarterNumber = Table.AddColumn(AddYear, "Quarter Number", each Date.QuarterOfYear([Date]), Int64.Type),
+				    AddQuarter = Table.AddColumn(AddQuarterNumber, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    AddYearQuarter = Table.AddColumn(AddQuarter, "Year Quarter", each Text.From(Date.Year([Date])) & "-Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    AddMonthNumber = Table.AddColumn(AddYearQuarter, "Month Number", each Date.Month([Date]), Int64.Type),
+				    AddMonth = Table.AddColumn(AddMonthNumber, "Month", each Date.ToText([Date], "MMM"), type text),
+				    AddYearMonth = Table.AddColumn(AddMonth, "Year Month", each Text.From(Date.Year([Date])) & "-" & Date.ToText([Date], "MMM"), type text),
+				    AddDay = Table.AddColumn(AddYearMonth, "Day", each Date.Day([Date]), Int64.Type),
+				    AddDayOfWeekNumber = Table.AddColumn(AddDay, "Day of Week Number", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type),
+				    AddDayOfWeek = Table.AddColumn(AddDayOfWeekNumber, "Day of Week", each Date.ToText([Date], "dddd"), type text)
+				in
+				    AddDayOfWeek
+

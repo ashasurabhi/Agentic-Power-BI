@@ -1,0 +1,27 @@
+/// Store sales star schema built from CSV extracts in _Demo_3/_data.
+model Model
+	culture: en-AU
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-AU
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+annotation PBI_QueryOrder = ["District","Store","Item","Date","Sales"]
+
+ref table District
+ref table Store
+ref table Item
+ref table Date
+ref table Sales
+ref table _Measures
+ref table 'Time Period'
+
+ref cultureInfo en-AU
+

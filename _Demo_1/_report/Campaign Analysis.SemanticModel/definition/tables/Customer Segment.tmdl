@@ -1,0 +1,34 @@
+/// Interest-based customer segment a campaign targeted. One row per segment.
+table 'Customer Segment'
+	lineageTag: badfe13e-a5a0-49dd-9c25-dc8ccf6e65a4
+
+	column 'Customer Segment Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		displayFolder: Keys
+		lineageTag: 9bf001d8-00e4-4bc4-92ae-c41a8b29aa07
+		summarizeBy: none
+		sourceColumn: Customer Segment Key
+
+	/// Interest-based segment of customers the campaign targeted, such as Foodies or Tech Enthusiasts. Complements Target Audience, which is demographic.
+	column 'Customer Segment'
+		dataType: string
+		lineageTag: a67fe3e0-a839-4e64-b505-25c6f899a9f3
+		summarizeBy: none
+		sourceColumn: Customer Segment
+
+	partition 'Customer Segment' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "marketing_campaign_dataset.csv"), [Delimiter = ",", Columns = 16, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Members = List.Sort(List.Distinct(Promoted[Customer_Segment])),
+				    Dimension = Table.FromColumns({List.Numbers(1, List.Count(Members)), Members}, {"Customer Segment Key", "Customer Segment"}),
+				    Typed = Table.TransformColumnTypes(Dimension, {{"Customer Segment Key", Int64.Type}, {"Customer Segment", type text}})
+				in
+				    Typed
+

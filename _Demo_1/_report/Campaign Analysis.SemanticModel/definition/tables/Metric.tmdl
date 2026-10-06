@@ -1,0 +1,48 @@
+table Metric
+	lineageTag: c5b0f9a0-41c2-4442-85aa-c5e1c3fa5044
+
+	column 'Metric Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ae11e27b-3df0-4dd2-94a4-4f05ae8993b7
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+	column 'Metric Fields'
+		dataType: string
+		isHidden
+		lineageTag: 13a15fcb-53cc-4fd5-838a-ab370111b4a8
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Metric Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+	column Metric
+		dataType: string
+		lineageTag: 12eb21bb-fc39-4554-9c45-f9ef3a388dff
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Metric Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Metric Fields'
+
+	partition Metric = calculated
+		mode: import
+		source =
+				{
+				    ("Average ROI", NAMEOF('Campaigns'[Average ROI]), 0),
+				    ("Cost-Weighted ROI", NAMEOF('Campaigns'[Cost-Weighted ROI]), 1),
+				    ("Click-Through Rate", NAMEOF('Campaigns'[Click-Through Rate]), 2),
+				    ("Average Conversion Rate", NAMEOF('Campaigns'[Average Conversion Rate]), 3),
+				    ("Average Engagement Score", NAMEOF('Campaigns'[Average Engagement Score]), 4),
+				    ("Cost per Click", NAMEOF('Campaigns'[Cost per Click]), 5),
+				    ("Average Acquisition Cost", NAMEOF('Campaigns'[Average Acquisition Cost]), 6)
+				}
+

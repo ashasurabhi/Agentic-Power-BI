@@ -1,0 +1,32 @@
+relationship 'Campaigns to Date'
+	fromColumn: Campaigns.'Campaign Date'
+	toColumn: Date.Date
+
+relationship 'Campaigns to Company'
+	fromColumn: Campaigns.'Company Key'
+	toColumn: Company.'Company Key'
+
+relationship 'Campaigns to Campaign Type'
+	fromColumn: Campaigns.'Campaign Type Key'
+	toColumn: 'Campaign Type'.'Campaign Type Key'
+
+relationship 'Campaigns to Channel'
+	fromColumn: Campaigns.'Channel Key'
+	toColumn: Channel.'Channel Key'
+
+relationship 'Campaigns to Target Audience'
+	fromColumn: Campaigns.'Target Audience Key'
+	toColumn: 'Target Audience'.'Target Audience Key'
+
+relationship 'Campaigns to Customer Segment'
+	fromColumn: Campaigns.'Customer Segment Key'
+	toColumn: 'Customer Segment'.'Customer Segment Key'
+
+relationship 'Campaigns to Location'
+	fromColumn: Campaigns.'Location Key'
+	toColumn: Location.'Location Key'
+
+relationship 'Campaigns to Language'
+	fromColumn: Campaigns.'Language Key'
+	toColumn: Language.'Language Key'
+

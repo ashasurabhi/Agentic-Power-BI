@@ -1,0 +1,32 @@
+/// Marketing campaign performance. One row per campaign (200,000 campaigns, 2021) analysed by company, campaign type, channel, target audience, customer segment, city, language and date. Start with the measures in the Campaigns table.
+model Model
+	culture: en-AU
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-AU
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+annotation PBI_QueryOrder = ["Date","Company","Campaign Type","Channel","Target Audience","Customer Segment","Location","Language","Campaigns","Data Folder"]
+
+ref table Date
+ref table Company
+ref table 'Campaign Type'
+ref table Channel
+ref table 'Target Audience'
+ref table 'Customer Segment'
+ref table Location
+ref table Language
+ref table Campaigns
+ref table Metric
+ref table 'Variance Metric'
+ref table 'Break Down By'
+
+ref cultureInfo en-AU
+

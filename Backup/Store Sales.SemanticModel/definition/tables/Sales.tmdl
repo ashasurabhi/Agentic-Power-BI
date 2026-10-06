@@ -1,0 +1,105 @@
+/// Fact table of monthly regular and markdown sales, in dollars and units, plus gross margin, by item and store. Grain: one row per Item x Store x Reporting Period. MonthID and ScenarioID from the source were dropped: MonthID duplicates ReportingPeriodID, and ScenarioID (2 unlabeled values, no lookup available) was left out of scope for this build.
+table Sales
+	lineageTag: 286c472a-2ddc-4923-a442-c96b70f993c4
+
+	column ItemID
+		dataType: int64
+		isAvailableInMdx: false
+		lineageTag: 7b2f6da4-d826-4021-b9e8-df2a59c62b0b
+		summarizeBy: none
+		sourceColumn: ItemID
+
+		changedProperty = IsHidden
+
+	column LocationID
+		dataType: int64
+		isAvailableInMdx: false
+		lineageTag: 9368577f-4d79-4958-a84d-89a760c03fd9
+		summarizeBy: none
+		sourceColumn: LocationID
+
+		changedProperty = IsHidden
+
+	column 'Gross Margin Amount'
+		dataType: decimal
+		formatString: $#,##0.00
+		isAvailableInMdx: false
+		lineageTag: ccd4fe84-d2c2-4aad-a275-305faf198940
+		summarizeBy: sum
+		sourceColumn: Gross Margin Amount
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Regular Sales Dollars'
+		dataType: decimal
+		formatString: $#,##0.00
+		isAvailableInMdx: false
+		lineageTag: 0cf3c451-89b2-4ed1-a506-7af9777e5ab6
+		summarizeBy: sum
+		sourceColumn: Regular Sales Dollars
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Markdown Sales Dollars'
+		dataType: decimal
+		formatString: $#,##0.00
+		isAvailableInMdx: false
+		lineageTag: 2623abd9-54be-4d8c-ab46-97ccbcda8406
+		summarizeBy: sum
+		sourceColumn: Markdown Sales Dollars
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Regular Sales Units'
+		dataType: int64
+		formatString: #,##0
+		isAvailableInMdx: false
+		lineageTag: 13adb507-c241-4496-9ebe-71b50072de4a
+		summarizeBy: sum
+		sourceColumn: Regular Sales Units
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Markdown Sales Units'
+		dataType: int64
+		formatString: #,##0
+		isAvailableInMdx: false
+		lineageTag: 957cd1c2-1b98-4c32-9858-e42a3cc07f26
+		summarizeBy: sum
+		sourceColumn: Markdown Sales Units
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of the sale, daily grain. Used for the relationship to Date; use Date table attributes for all time-based analysis.
+	column 'Invoice Date'
+		dataType: dateTime
+		isAvailableInMdx: false
+		lineageTag: c93bf146-3c1d-4c7b-a8e2-865df16766c8
+		sourceColumn: Invoice Date
+
+		changedProperty = IsHidden
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Agentic-Power-BI\_Demo_3\_data\Sales.csv"),[Delimiter=",", Columns=9, Encoding=1252, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source,[PromoteAllScalars=true]),
+				    Removed = Table.RemoveColumns(Promoted,{"MonthID"}),
+				    Typed = Table.TransformColumnTypes(Removed,{{"InvoiceDate", type date}, {"ItemID", Int64.Type},{"LocationID", Int64.Type},{"Sum_GrossMarginAmount", type number},{"Sum_Regular_Sales_Dollars", type number},{"Sum_Markdown_Sales_Dollars", type number},{"Sum_Regular_Sales_Units", Int64.Type},{"Sum_Markdown_Sales_Units", Int64.Type}}, "en-AU"),
+				    Renamed = Table.RenameColumns(Typed,{{"InvoiceDate","Invoice Date"},{"Sum_GrossMarginAmount","Gross Margin Amount"},{"Sum_Regular_Sales_Dollars","Regular Sales Dollars"},{"Sum_Markdown_Sales_Dollars","Markdown Sales Dollars"},{"Sum_Regular_Sales_Units","Regular Sales Units"},{"Sum_Markdown_Sales_Units","Markdown Sales Units"}})
+				in
+				    Renamed
+
+	annotation PBI_ResultType = Table
+

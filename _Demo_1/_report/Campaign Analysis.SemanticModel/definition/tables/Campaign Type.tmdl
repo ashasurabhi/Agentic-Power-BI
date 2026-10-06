@@ -1,0 +1,34 @@
+/// Type of marketing campaign (Email, Display, Influencer, Search, Social Media). One row per type.
+table 'Campaign Type'
+	lineageTag: 314d2d8e-2a5d-4cb6-8d89-839d3ed3fc86
+
+	column 'Campaign Type Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		displayFolder: Keys
+		lineageTag: 0bbd469f-9bdd-43ab-94c1-c5c73cc7595f
+		summarizeBy: none
+		sourceColumn: Campaign Type Key
+
+	/// Format of the campaign, such as Email, Display, Influencer, Search or Social Media.
+	column 'Campaign Type'
+		dataType: string
+		lineageTag: 5c0fc4e4-de67-473e-a5aa-125980b97849
+		summarizeBy: none
+		sourceColumn: Campaign Type
+
+	partition 'Campaign Type' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "marketing_campaign_dataset.csv"), [Delimiter = ",", Columns = 16, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Members = List.Sort(List.Distinct(Promoted[Campaign_Type])),
+				    Dimension = Table.FromColumns({List.Numbers(1, List.Count(Members)), Members}, {"Campaign Type Key", "Campaign Type"}),
+				    Typed = Table.TransformColumnTypes(Dimension, {{"Campaign Type Key", Int64.Type}, {"Campaign Type", type text}})
+				in
+				    Typed
+

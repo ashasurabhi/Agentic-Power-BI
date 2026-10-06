@@ -1,0 +1,34 @@
+/// Languages campaigns were delivered in. One row per language.
+table Language
+	lineageTag: 1397c541-becd-4aae-b4fe-1d4a70dc5036
+
+	column 'Language Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		displayFolder: Keys
+		lineageTag: 67272f05-dd29-4acf-be83-1acb5e0aaba5
+		summarizeBy: none
+		sourceColumn: Language Key
+
+	/// Language the campaign content was delivered in.
+	column Language
+		dataType: string
+		lineageTag: fda2e13b-10f5-40ef-98a4-ff41bb39d266
+		summarizeBy: none
+		sourceColumn: Language
+
+	partition Language = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "marketing_campaign_dataset.csv"), [Delimiter = ",", Columns = 16, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Members = List.Sort(List.Distinct(Promoted[Language])),
+				    Dimension = Table.FromColumns({List.Numbers(1, List.Count(Members)), Members}, {"Language Key", "Language"}),
+				    Typed = Table.TransformColumnTypes(Dimension, {{"Language Key", Int64.Type}, {"Language", type text}})
+				in
+				    Typed
+

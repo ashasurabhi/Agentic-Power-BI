@@ -1,0 +1,6 @@
+/// Folder containing marketing_campaign_dataset.csv, ending with a backslash. Change this to repoint the model at another location.
+expression 'Data Folder' = "C:\Agentic-Power-BI\_Demo_1\_data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: cc952aae-3500-4de4-8250-b75b4d80bd13
+
+	annotation PBI_ResultType = Text
+

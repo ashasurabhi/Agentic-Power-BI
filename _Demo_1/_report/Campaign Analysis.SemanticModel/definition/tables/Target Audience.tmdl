@@ -1,0 +1,34 @@
+/// Demographic group a campaign targeted. One row per audience.
+table 'Target Audience'
+	lineageTag: 6f731179-d1d8-4a1a-ac51-ed119e049b4f
+
+	column 'Target Audience Key'
+		dataType: int64
+		isHidden
+		isKey
+		formatString: 0
+		isAvailableInMdx: false
+		displayFolder: Keys
+		lineageTag: 1af8eaa3-0cd2-4ce7-87b5-72f6b3a58d1c
+		summarizeBy: none
+		sourceColumn: Target Audience Key
+
+	/// Age and gender group the campaign was aimed at, for example Women 25-34 or All Ages.
+	column 'Target Audience'
+		dataType: string
+		lineageTag: d1478417-ebdd-4458-aed6-0ea52ae3adc2
+		summarizeBy: none
+		sourceColumn: Target Audience
+
+	partition 'Target Audience' = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(#"Data Folder" & "marketing_campaign_dataset.csv"), [Delimiter = ",", Columns = 16, Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Members = List.Sort(List.Distinct(Promoted[Target_Audience])),
+				    Dimension = Table.FromColumns({List.Numbers(1, List.Count(Members)), Members}, {"Target Audience Key", "Target Audience"}),
+				    Typed = Table.TransformColumnTypes(Dimension, {{"Target Audience Key", Int64.Type}, {"Target Audience", type text}})
+				in
+				    Typed
+

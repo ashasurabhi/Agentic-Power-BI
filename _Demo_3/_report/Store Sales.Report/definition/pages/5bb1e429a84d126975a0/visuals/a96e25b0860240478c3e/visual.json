@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "a96e25b0860240478c3e",
+  "position": {
+    "x": 1384.2473482283908,
+    "y": 151.05213270142181,
+    "z": 2000,
+    "height": 183.81042654028437,
+    "width": 263.88625592417065,
+    "tabOrder": 2000
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Gross Margin TY vs LY Arrow"
+                }
+              },
+              "queryRef": "_Measures.Gross Margin TY vs LY Arrow",
+              "nativeQueryRef": "Gross Margin TY vs LY Arrow"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

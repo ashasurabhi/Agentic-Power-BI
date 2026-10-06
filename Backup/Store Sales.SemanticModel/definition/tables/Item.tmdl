@@ -1,0 +1,60 @@
+/// One row per item (SKU).
+table Item
+	lineageTag: cb81eee3-5ed5-4017-895f-8c9e231fe7ef
+
+	column ItemID
+		dataType: int64
+		isAvailableInMdx: false
+		lineageTag: f5752905-8094-4563-a76c-c7b6991aca93
+		summarizeBy: none
+		sourceColumn: ItemID
+
+		changedProperty = IsHidden
+
+	column Segment
+		dataType: string
+		lineageTag: c070dc2a-4f9f-47cf-a6d8-90ee883e9fc3
+		sourceColumn: Segment
+
+		changedProperty = IsHidden
+
+	column Category
+		dataType: string
+		lineageTag: 3bd1064e-2bc8-48a3-b121-89beac51d3a2
+		sourceColumn: Category
+
+		changedProperty = IsHidden
+
+	column Buyer
+		dataType: string
+		lineageTag: 35b4b77d-6689-4985-85c6-bfc45747cecb
+		sourceColumn: Buyer
+
+		changedProperty = IsHidden
+
+	column Family
+		dataType: string
+		lineageTag: 4a6fa8a0-6ff8-4535-b283-44a7bf3a4034
+		sourceColumn: Family
+
+		changedProperty = IsHidden
+
+	/// Merchandising cluster derived from Category (e.g. Cluster1-Cluster7).
+	column 'Category Cluster'
+		dataType: string
+		lineageTag: b0f351b5-d64f-48bb-9a0a-95039b9918c6
+		sourceColumn: Category Cluster
+
+		changedProperty = IsHidden
+
+	partition Item = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Agentic-Power-BI\_Demo_3\_data\Item.csv"),[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source,[PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted,{{"ItemID",Int64.Type},{"Segment",type text},{"Category",type text},{"Buyer",type text},{"Family",type text},{"Category (clusters) 2",type text}}),
+				    Renamed = Table.RenameColumns(Typed,{{"Category (clusters) 2","Category Cluster"}})
+				in
+				    Renamed
+

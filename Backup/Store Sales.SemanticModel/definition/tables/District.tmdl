@@ -1,0 +1,59 @@
+/// One row per sales district.
+table District
+	lineageTag: 8b39aae1-2138-4a4b-87bd-e82fd329ebc8
+
+	column DistrictID
+		dataType: int64
+		isAvailableInMdx: false
+		lineageTag: 56729f98-9b03-4065-a6bf-1ed7b740255a
+		summarizeBy: none
+		sourceColumn: DistrictID
+
+		changedProperty = IsHidden
+
+	/// District name.
+	column District
+		dataType: string
+		lineageTag: 88b18e97-9aa5-41b3-b56f-7165b9daa3d0
+		sourceColumn: District
+
+		changedProperty = IsHidden
+
+	/// District manager name.
+	column DM
+		dataType: string
+		lineageTag: f8365169-29ae-4308-a903-ca33abc5294e
+		sourceColumn: DM
+
+		changedProperty = IsHidden
+
+	/// URL to the district manager's photo.
+	column DM_Pic
+		dataType: string
+		lineageTag: 16452789-ba7a-4e49-bf2c-02ea8692a91e
+		dataCategory: ImageUrl
+		sourceColumn: DM_Pic
+
+		changedProperty = IsHidden
+
+	/// Identifier of the business unit the district rolls up to. No separate business unit table exists in the source data.
+	column 'Business Unit ID'
+		dataType: int64
+		lineageTag: fad9d775-75e7-48f5-97e8-716c59b5245b
+		summarizeBy: none
+		sourceColumn: Business Unit ID
+
+		changedProperty = IsHidden
+
+	partition District = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Agentic-Power-BI\_Demo_3\_data\District.csv"),[Delimiter=",", Columns=7, Encoding=1252, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source,[PromoteAllScalars=true]),
+				    Removed = Table.RemoveColumns(Promoted,{"DMImage","DM_Pic_fl"}),
+				    Typed = Table.TransformColumnTypes(Removed,{{"DistrictID",Int64.Type},{"District",type text},{"DM",type text},{"DM_Pic",type text},{"BusinessUnitID",Int64.Type}}),
+				    Renamed = Table.RenameColumns(Typed,{{"BusinessUnitID","Business Unit ID"}})
+				in
+				    Renamed
+

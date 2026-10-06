@@ -1,0 +1,138 @@
+/// One row per store (location).
+table Store
+	lineageTag: f7b2c904-3226-4efb-b876-e590c3eb1bba
+
+	column LocationID
+		dataType: int64
+		isAvailableInMdx: false
+		lineageTag: dc8b4c2c-75a4-48e4-b01d-efcf8eb3d59b
+		summarizeBy: none
+		sourceColumn: LocationID
+
+		changedProperty = IsHidden
+
+	/// Store name.
+	column Store
+		dataType: string
+		lineageTag: 5cedd0c1-e3c6-400f-bdec-b77cf8c2b0ab
+		sourceColumn: Store
+
+		changedProperty = IsHidden
+
+	column City
+		dataType: string
+		lineageTag: 27732f10-ca3f-42f4-9c9a-0548f282e6d0
+		dataCategory: City
+		sourceColumn: City
+
+		changedProperty = IsHidden
+
+	/// US state abbreviation.
+	column Territory
+		dataType: string
+		lineageTag: b658167c-7839-4e39-a2c0-f5a1367cc72d
+		dataCategory: StateOrProvince
+		sourceColumn: Territory
+
+		changedProperty = IsHidden
+
+	column 'Postal Code'
+		dataType: string
+		lineageTag: e450d299-e000-465a-a059-87028c545e4e
+		dataCategory: PostalCode
+		sourceColumn: Postal Code
+
+		changedProperty = IsHidden
+
+	column 'Opening Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 3cbd30a0-ab0f-4921-9d64-193fe85aa84a
+		sourceColumn: Opening Date
+
+		changedProperty = IsHidden
+
+	/// Store selling area, in square feet.
+	column 'Selling Area Size'
+		dataType: int64
+		formatString: #,##0
+		lineageTag: ae69bfc9-f5a6-4fa0-953b-ec574705229e
+		sourceColumn: Selling Area Size
+
+		changedProperty = IsHidden
+
+	column Chain
+		dataType: string
+		lineageTag: 3d915375-dc7b-45fc-a863-e186acfa947a
+		sourceColumn: Chain
+
+		changedProperty = IsHidden
+
+	/// District manager name, denormalized from District. Prefer District[DM] for district-level analysis.
+	column DM
+		dataType: string
+		lineageTag: 3b246aa5-f78b-4a10-886b-ac070ae65cee
+		sourceColumn: DM
+
+		changedProperty = IsHidden
+
+	column DM_Pic
+		dataType: string
+		lineageTag: db737015-2c74-45f8-96d0-6c4c69ab2dcb
+		dataCategory: ImageUrl
+		sourceColumn: DM_Pic
+
+		changedProperty = IsHidden
+
+	column DistrictID
+		dataType: int64
+		lineageTag: 7032eabe-c7ce-4dff-8a19-e4418fcf9db6
+		summarizeBy: none
+		sourceColumn: DistrictID
+
+		changedProperty = IsHidden
+
+	column 'Opening Year'
+		dataType: int64
+		lineageTag: ea697b84-0db7-4546-b6ee-6d07a79137e2
+		summarizeBy: none
+		sourceColumn: Opening Year
+
+		changedProperty = IsHidden
+
+	column 'Store Type'
+		dataType: string
+		lineageTag: 20f66846-b6b7-4fc0-9add-989325bd836c
+		sourceColumn: Store Type
+
+		changedProperty = IsHidden
+
+	/// Sort helper for Opening Month.
+	column 'Open Month No'
+		dataType: int64
+		lineageTag: 0e05ed0c-c59a-4744-beb4-7b15e93abafa
+		summarizeBy: none
+		sourceColumn: Open Month No
+
+		changedProperty = IsHidden
+
+	column 'Opening Month'
+		dataType: string
+		lineageTag: 639c69b3-ff2b-4ce1-83c3-23b4ac4fca19
+		sourceColumn: Opening Month
+		sortByColumn: 'Open Month No'
+
+		changedProperty = IsHidden
+
+	partition Store = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\Agentic-Power-BI\_Demo_3\_data\Store.csv"),[Delimiter=",", Columns=19, Encoding=1252, QuoteStyle=QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source,[PromoteAllScalars=true]),
+				    Typed = Table.TransformColumnTypes(Promoted,{{"LocationID", Int64.Type},{"City Name", type text},{"Territory", type text},{"Postal code", type text},{"Opening date", type datetime},{"SellingAreaSize", Int64.Type},{"DistrictName", type text},{"Name", type text},{"Store name and number", type text},{"StoreNumber", Int64.Type},{"City", type text},{"Chain", type text},{"DM", type text},{"DM_Pic", type text},{"DistrictID", Int64.Type},{"Opening year", Int64.Type},{"Store type", type text},{"Open Month No", Int64.Type},{"Opening month", type text}}),
+				    Removed = Table.RemoveColumns(Typed,{"DistrictName","Store name and number","StoreNumber","City"}),
+				    Renamed = Table.RenameColumns(Removed,{{"City Name","City"},{"Postal code","Postal Code"},{"Opening date","Opening Date"},{"SellingAreaSize","Selling Area Size"},{"Name","Store"},{"Opening year","Opening Year"},{"Store type","Store Type"},{"Opening month","Opening Month"}})
+				in
+				    Renamed
+

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "d1541b1fb0232a830b01",
+  "displayName": "Portfolio summary",
+  "displayOption": "FitToPage",
+  "height": 1080,
+  "width": 1920,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F1F5F9'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "b4522d5482a96ce600b6",
+      "target": "1fd3097c2decbd054f8c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "e612bfd5aadd3e266812",
+      "target": "1fd3097c2decbd054f8c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "285b47709c4a140213e0",
+      "target": "1fd3097c2decbd054f8c",
+      "type": "NoFilter"
+    }
+  ]
+}

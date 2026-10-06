@@ -1,0 +1,114 @@
+/// Central home for report measures. Holds no report-facing data; browse by display folder.
+table _Measures
+	lineageTag: f2fc46a1-ca4c-4754-b9ec-518d4f8f5f31
+
+	/// Total sales dollars (regular plus markdown) for whatever period is in the current filter context.
+	measure 'Total Sales' = SUM(Sales[Regular Sales Dollars]) + SUM(Sales[Markdown Sales Dollars])
+		formatString: $#,##0
+		displayFolder: Sales
+		lineageTag: b0e78411-1afd-4387-8e27-699f97036bbf
+
+	/// Total sales dollars for the current calendar year (based on today's date), regardless of any Year filter already applied.
+	measure 'Sales TY' = CALCULATE([Total Sales], 'Date'[Year] = YEAR(TODAY()))
+		formatString: $#,##0
+		displayFolder: Sales
+		lineageTag: 37ff037f-ac2b-4383-993f-a58aaac4b5c0
+
+	/// Total sales dollars for the calendar year before the current one, for the same Month/Quarter selection as This Year Sales.
+	measure 'Sales LY' = CALCULATE([Total Sales], 'Date'[Year] = YEAR(TODAY()) - 1)
+		formatString: $#,##0
+		displayFolder: Sales
+		lineageTag: e1b06ce9-cf33-4b2f-9cc1-bf2ebc163aef
+
+	/// This Year Sales versus Sales LY, as a percentage of Sales LY.
+	measure 'Total Sales Var %' = DIVIDE([Sales TY] - [Sales LY], [Sales LY])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Sales
+		lineageTag: 9cca6496-6a56-430f-a4e4-b589c5cea732
+
+	/// This Year Sales dollars per square foot of selling area, across the stores in the current selection.
+	measure 'Sales Per Sq Ft' = DIVIDE([Sales TY], SUM(Store[Selling Area Size]))
+		formatString: $#,##0.00
+		displayFolder: Sales
+		lineageTag: cf7a055d-f48a-4cc3-a36d-3fda83b33b75
+
+	/// Total sales dollars for the same date range as the current filter context, shifted back exactly one year. Unlike Sales LY (which just swaps the Year), this correctly handles any date range — a single month, a custom range, rolling 12 months, YTD — not only whole-year or whole-month filters.
+	measure 'Sales SPLY' = CALCULATE([Total Sales], SAMEPERIODLASTYEAR('Date'[Date]))
+		formatString: $#,##0
+		displayFolder: Sales
+		lineageTag: 82d9c594-477a-4354-9bdc-70a1b44b6c99
+
+	/// Sum of gross margin dollars for whatever period is in the current filter context.
+	measure 'Total Gross Margin' = SUM(Sales[Gross Margin Amount])
+		formatString: $#,##0
+		displayFolder: Margin
+		lineageTag: 9f56ce0e-3e92-4182-9783-a030843d7b7f
+
+	/// Gross margin dollars for the current calendar year (based on today's date), regardless of any Year filter already applied. Matches the Sales TY pattern.
+	measure 'Gross Margin TY' = CALCULATE([Total Gross Margin], 'Date'[Year] = YEAR(TODAY()))
+		formatString: $#,##0
+		displayFolder: Margin
+		lineageTag: eb4c70d6-bc68-4825-8273-2696e44b3086
+
+	/// Gross margin dollars for the calendar year before the current one. Matches the Sales LY pattern.
+	measure 'Gross Margin LY' = CALCULATE([Total Gross Margin], 'Date'[Year] = YEAR(TODAY()) - 1)
+		formatString: $#,##0
+		displayFolder: Margin
+		lineageTag: 9e0c6b0b-a2ea-43ff-bfd2-89f212ccc87d
+
+	/// Gross Margin TY minus Gross Margin LY, in dollars.
+	measure 'Gross Margin Variance' = [Gross Margin TY] - [Gross Margin LY]
+		formatString: $#,##0;-$#,##0;$#,##0
+		displayFolder: Margin
+		lineageTag: d638e173-f00e-4b36-83c9-ad8ae3e145d0
+
+	/// Cumulative sales from day 1 of the month through the cutoff implied by the axis. With Date on the axis, each point uses that date's own month (natural monthly reset across history). With only Day (1-31) on the axis, it uses the fixed current month (the dataset's latest month) and that day number as the cutoff, so multiple day-of-month lines compare on equal footing. With no date context (a card), it returns the full current-month total.
+	measure 'Sales MTD TY' =
+			VAR _DataMaxDate = CALCULATE(MAX(Sales[Invoice Date]), ALL(Sales))
+			VAR _CurrentYear = YEAR(_DataMaxDate)
+			VAR _CurrentMonth = MONTH(_DataMaxDate)
+			VAR _FixedMonthStart = DATE(_CurrentYear, _CurrentMonth, 1)
+			VAR _DaysInFixedMonth = DAY(EOMONTH(_FixedMonthStart, 0))
+			VAR _HasSingleDate = HASONEVALUE('Date'[Date])
+			VAR _ContextDate = IF(_HasSingleDate, MAX('Date'[Date]))
+			VAR _ContextMonthStart = IF(_HasSingleDate, DATE(YEAR(_ContextDate), MONTH(_ContextDate), 1))
+			VAR _SelectedDay = MIN(MAX('Date'[Day]), _DaysInFixedMonth)
+			VAR _FixedCutoff = DATE(_CurrentYear, _CurrentMonth, _SelectedDay)
+			VAR _MonthStart = IF(_HasSingleDate, _ContextMonthStart, _FixedMonthStart)
+			VAR _CutoffDate = IF(_HasSingleDate, _ContextDate, _FixedCutoff)
+			RETURN CALCULATE([Total Sales], ALL('Date'), 'Date'[Date] >= _MonthStart && 'Date'[Date] <= _CutoffDate)
+		formatString: $#,##0
+		displayFolder: Sales
+		lineageTag: 2886c43c-a0c6-427c-a0ec-9332f0e9117b
+
+	/// Same cumulative logic as Sales MTD TY, shifted back one year: with Date on the axis each point shifts that exact date back a year; with only Day on the axis it uses the current month one year ago, cut off at that day number — so plotting Sales MTD TY and Sales MTD LY against a Day (1-31) axis overlays two comparable within-month build-up curves.
+	measure 'Sales MTD LY' =
+			VAR _DataMaxDate = CALCULATE(MAX(Sales[Invoice Date]), ALL(Sales))
+			VAR _CurrentYear = YEAR(_DataMaxDate)
+			VAR _CurrentMonth = MONTH(_DataMaxDate)
+			VAR _FixedMonthStartLY = DATE(_CurrentYear - 1, _CurrentMonth, 1)
+			VAR _DaysInFixedMonthLY = DAY(EOMONTH(_FixedMonthStartLY, 0))
+			VAR _HasSingleDate = HASONEVALUE('Date'[Date])
+			VAR _ContextDate = IF(_HasSingleDate, MAX('Date'[Date]))
+			VAR _ContextDateLY = IF(_HasSingleDate, DATE(YEAR(_ContextDate) - 1, MONTH(_ContextDate), DAY(_ContextDate)))
+			VAR _ContextMonthStartLY = IF(_HasSingleDate, DATE(YEAR(_ContextDateLY), MONTH(_ContextDateLY), 1))
+			VAR _SelectedDay = MIN(MAX('Date'[Day]), _DaysInFixedMonthLY)
+			VAR _FixedCutoffLY = DATE(_CurrentYear - 1, _CurrentMonth, _SelectedDay)
+			VAR _MonthStart = IF(_HasSingleDate, _ContextMonthStartLY, _FixedMonthStartLY)
+			VAR _CutoffDate = IF(_HasSingleDate, _ContextDateLY, _FixedCutoffLY)
+			RETURN CALCULATE([Total Sales], ALL('Date'), 'Date'[Date] >= _MonthStart && 'Date'[Date] <= _CutoffDate)
+		formatString: $#,##0
+		displayFolder: Sales
+		lineageTag: e112dd23-b7c5-4da8-a57d-1df8efe70fca
+
+	column Dummy
+		isHidden
+		isAvailableInMdx: false
+		lineageTag: c9415095-80b5-45a2-8e16-7262fdafbc08
+		isNameInferred
+		sourceColumn: [Dummy]
+
+	partition _Measures = calculated
+		mode: import
+		source = ROW("Dummy", BLANK())
+

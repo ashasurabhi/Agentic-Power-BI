@@ -1,0 +1,92 @@
+/// Calendar date dimension with one row per day from 2020-01-01 to 2030-12-31. Relate the Date column to date fields in fact tables.
+table Date
+	lineageTag: ee124856-8ac8-41c7-854a-04f26a3a21c2
+	dataCategory: Time
+
+	/// Calendar date (one row per day).
+	column Date
+		dataType: dateTime
+		isUnique
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: f56a45d9-51bf-47f6-8e90-2dd1ddd83508
+		summarizeBy: none
+		sourceColumn: Date
+
+	/// Calendar year.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 712d76d0-3132-498f-b9dd-18536457f469
+		summarizeBy: none
+		sourceColumn: Year
+
+	/// Calendar quarter label (Q1 to Q4).
+	column Quarter
+		dataType: string
+		lineageTag: 02965e2d-ea60-49fa-9fc7-a85d8ae81c75
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	/// Month of year (1 to 12). Used to sort Month Name chronologically.
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 58cc92a3-5050-4709-8c79-977d295b67a6
+		summarizeBy: none
+		sourceColumn: Month Number
+
+	/// Full month name, sorted by month number.
+	column 'Month Name'
+		dataType: string
+		lineageTag: 4b9b5ad4-0e09-458e-acab-946f31707c05
+		summarizeBy: none
+		sourceColumn: Month Name
+		sortByColumn: 'Month Number'
+
+	/// Day of the month (1 to 31).
+	column Day
+		dataType: int64
+		formatString: 0
+		lineageTag: afb7e06e-ced6-41b3-bcbc-42133ec5d7ce
+		summarizeBy: none
+		sourceColumn: Day
+
+	/// Day of week, Monday = 1 through Sunday = 7. Used to sort Day of Week Name.
+	column 'Day of Week Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a06b4b7a-14e0-4498-acd6-b993af2c193b
+		summarizeBy: none
+		sourceColumn: Day of Week Number
+
+	/// Full weekday name, sorted Monday to Sunday.
+	column 'Day of Week Name'
+		dataType: string
+		lineageTag: f9fb6a41-c2b6-4969-8ec8-9013c1dcd5b7
+		summarizeBy: none
+		sourceColumn: Day of Week Name
+		sortByColumn: 'Day of Week Number'
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    StartDate = #date(2020, 1, 1),
+				    EndDate = #date(2030, 12, 31),
+				    DayCount = Duration.Days(EndDate - StartDate) + 1,
+				    Dates = List.Dates(StartDate, DayCount, #duration(1, 0, 0, 0)),
+				    DateTable = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}, null, ExtraValues.Error),
+				    TypedDate = Table.TransformColumnTypes(DateTable, {{"Date", type date}}),
+				    AddYear = Table.AddColumn(TypedDate, "Year", each Date.Year([Date]), Int64.Type),
+				    AddQuarter = Table.AddColumn(AddYear, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    AddMonthNumber = Table.AddColumn(AddQuarter, "Month Number", each Date.Month([Date]), Int64.Type),
+				    AddMonthName = Table.AddColumn(AddMonthNumber, "Month Name", each Date.MonthName([Date]), type text),
+				    AddDay = Table.AddColumn(AddMonthName, "Day", each Date.Day([Date]), Int64.Type),
+				    AddDayOfWeekNumber = Table.AddColumn(AddDay, "Day of Week Number", each Date.DayOfWeek([Date], Day.Monday) + 1, Int64.Type),
+				    AddDayOfWeekName = Table.AddColumn(AddDayOfWeekNumber, "Day of Week Name", each Date.DayOfWeekName([Date]), type text)
+				in
+				    AddDayOfWeekName
+
