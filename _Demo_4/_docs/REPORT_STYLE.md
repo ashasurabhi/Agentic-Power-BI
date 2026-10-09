@@ -37,7 +37,7 @@ These apply to any page and say how to arrange elements, not which ones to use.
 | Outline | `#D5D5D5` | Border around every object |
 | Title band | `#E6E6E6` | Fill of the title band on KPI cards |
 | Last year (LY) grey | `#8A8886` | Last-year or prior-period comparison series in any chart |
-| Slicer outline | `#B0B6DE` | Border of slicer boxes |
+| Slicer outline | `#B0B6DE` | Visual border of the rounded rectangle behind each slicer |
 | Gridline | `#EEEEEE` | Chart gridlines |
 | Black | `#000000` | Dashed trend line, bullet bar and target tick |
 | Logo green | `#008000` | In the logo only |
@@ -55,7 +55,7 @@ Actual and forecast are always blue and navy, in that order, in every chart that
 | KPI card value | Largest type in the report, about 40 px, regular, centred. Looks like DIN, the Power BI default for card values. |
 | KPI card label | About 15 px, regular, centred |
 | Object titles (chart, table) | About 15 px, semibold, left aligned |
-| Slicer label | About 13 px, semibold |
+| Slicer title (text of the rounded rectangle) | About 13 px, semibold |
 | Axis labels, legend, data labels | About 11 to 12 px, regular |
 | Axis title | About 11 px, semibold, centred under the axis |
 
@@ -74,9 +74,12 @@ No text below 11 px at screenshot scale. On a larger canvas, scale every size by
 | Rule | Standard |
 |---|---|
 | Default type | **Dropdown.** Keeps filters to one compact row. |
-| Box | White fill, 1 px `#B0B6DE` border, corner radius about 4 px. |
-| Label | Field name, 13 px semibold, to the left inside the box. |
-| Value | In an inner box with a chevron at the right. The unfiltered state reads "All". |
+| Construction | Every filter is a **group** named after its title (for example "Client"). The group holds two items: a **rounded rectangle** shape and the **native slicer** placed inside it. |
+| Rounded rectangle | Shape type rounded rectangle, white fill, shape outline off. Its **text is the slicer title**: 13 px semibold `#252423`, left aligned, vertically centred, about 12 px left margin. Its **visual border** is 1 px `#B0B6DE` with a corner radius of about 4 px. The shape's name in the selection pane is the title. |
+| Native slicer | Mode Dropdown, header hidden, no border, no fill, named "Slicer". Sits inside the rectangle, to the right of the title text, with a small gap to the right edge. Padding is set explicitly so the 32 px dropdown fits the rectangle height. Alt text names the field, because the header is hidden. |
+| Size | Same height for every filter (about 48 px at 1080 px page height). The title area and the dropdown have the same widths in every filter, so the dropdowns line up. |
+| Value | The dropdown's own selector box is the inner box, with a chevron at the right. The unfiltered state reads "All". |
+| Layering | Rectangle at the back, slicer on top. Tab order: rectangle first, then slicer. |
 | Selection | Multi-select by default. Single select only where exactly one value is needed (for example one week), and the title says so. |
 | Order of values | Alphabetical, or natural order for dates and ranks. Newest first for long date lists. |
 | Search | On for any list longer than about 10 values. |
@@ -128,7 +131,7 @@ Footnotes and notes in 11 to 12 px secondary text `#605E5C`, left aligned, no bo
 
 1. White page, `#D5D5D5` outline around every object, no shadows.
 2. Title top left, logo top right.
-3. Filters in one row, in a fixed order, as dropdowns by default.
+3. Filters in one row, in a fixed order, as dropdowns by default, each built as a group of a titled rounded rectangle with the native slicer inside it (6.2).
 4. KPI cards: equal size, grey title band, large centred value.
 5. Blue `#118DFF` for actual, navy `#12239E` for forecast or the second series, grey `#8A8886` for last year (LY).
 6. Data labels only where they add something.
