@@ -238,7 +238,7 @@ table _Measures
 			VAR _current = CALCULATE ( [Spend], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
 			VAR _previous = CALCULATE ( [Spend], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
 			RETURN DIVIDE ( _current - _previous, _previous )
-		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		formatString: ▲ 0.0%" vs LW";▼ 0.0%" vs LW";0.0%" vs LW"
 		lineageTag: 53398d8e-ff71-42a4-b075-1152f84b42d9
 
 	/// Percentage change in Revenue from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero. A partial week gives a misleading change.
@@ -247,7 +247,7 @@ table _Measures
 			VAR _current = CALCULATE ( [Revenue], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
 			VAR _previous = CALCULATE ( [Revenue], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
 			RETURN DIVIDE ( _current - _previous, _previous )
-		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		formatString: ▲ 0.0%" vs LW";▼ 0.0%" vs LW";0.0%" vs LW"
 		lineageTag: 322b7f8a-abb4-42cc-aad4-0c7e641d55e4
 
 	/// Percentage change in ROAS from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero.
@@ -256,7 +256,7 @@ table _Measures
 			VAR _current = CALCULATE ( [ROAS], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
 			VAR _previous = CALCULATE ( [ROAS], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
 			RETURN DIVIDE ( _current - _previous, _previous )
-		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		formatString: ▲ 0.0%" vs LW";▼ 0.0%" vs LW";0.0%" vs LW"
 		lineageTag: b3134861-ef34-483d-bd72-6344b602d61e
 
 	/// Percentage change in CPA from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero.
@@ -265,7 +265,7 @@ table _Measures
 			VAR _current = CALCULATE ( [CPA], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
 			VAR _previous = CALCULATE ( [CPA], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
 			RETURN DIVIDE ( _current - _previous, _previous )
-		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		formatString: ▲ 0.0%" vs LW";▼ 0.0%" vs LW";0.0%" vs LW"
 		lineageTag: da8842c2-8821-4dbc-995d-bcb1d7de8fae
 
 	/// Percentage change in Active Campaigns from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero. A partial week gives a misleading change.
@@ -274,7 +274,7 @@ table _Measures
 			VAR _current = CALCULATE ( [Active Campaigns], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
 			VAR _previous = CALCULATE ( [Active Campaigns], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
 			RETURN DIVIDE ( _current - _previous, _previous )
-		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		formatString: ▲ 0.0%" vs LW";▼ 0.0%" vs LW";0.0%" vs LW"
 		lineageTag: 7b4f6c47-2882-468d-be9b-b8c7e5c89f08
 
 	column Placeholder

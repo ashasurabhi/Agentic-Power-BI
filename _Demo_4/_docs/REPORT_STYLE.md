@@ -40,7 +40,7 @@ These apply to any page and say how to arrange elements, not which ones to use.
 | Slicer outline | `#B0B6DE` | Visual border of the rounded rectangle behind each slicer |
 | Gridline | `#EEEEEE` | Chart gridlines |
 | Black | `#000000` | Dashed trend line, bullet bar and target tick |
-| Logo green | `#008000` | In the logo only |
+| Logo green | `#008000` | The logo, and the 2 px header line under the page title |
 | Logo navy | `#000080` | In the logo only |
 
 **Status bands.** 
@@ -65,7 +65,7 @@ No text below 11 px at screenshot scale. On a larger canvas, scale every size by
 
 ### 6.1 Every object (container)
 
-- 1 px `#D5D5D5` border, corner radius about 4 px, no shadow, white fill.
+- 1 px `#D5D5D5` border, corner radius about 6 px, no shadow, white fill.
 - Title inside the object, top left, 15 px semibold. A KPI card's title is centred in its band instead.
 - Transparent background with no border only for a block of charts meant to read as one group.
 
@@ -75,8 +75,8 @@ No text below 11 px at screenshot scale. On a larger canvas, scale every size by
 |---|---|
 | Default type | **Dropdown.** Keeps filters to one compact row. |
 | Construction | Every filter is a **group** named after its title (for example "Client"). The group holds two items: a **rounded rectangle** shape and the **native slicer** placed inside it. |
-| Rounded rectangle | Shape type rounded rectangle, white fill, shape outline off. Its **text is the slicer title**: 13 px semibold `#252423`, left aligned, vertically centred, about 12 px left margin. Its **visual border** is 1 px `#B0B6DE` with a corner radius of about 4 px. The shape's name in the selection pane is the title. |
-| Native slicer | Mode Dropdown, header hidden, no border, no fill, named "Slicer". Sits inside the rectangle, to the right of the title text, with a small gap to the right edge. Padding is set explicitly so the 32 px dropdown fits the rectangle height. Alt text names the field, because the header is hidden. |
+| Rounded rectangle | Shape type rounded rectangle, white fill, shape outline off. Its **text is the slicer title**: 13 px semibold `#252423`, left aligned, vertically centred, about 12 px left margin. Its **visual border** is 1 px `#B0B6DE` with a corner radius of about 6 px. The shape's name in the selection pane is the title. |
+| Native slicer | Mode Dropdown, header hidden, no border, no fill, named "Slicer". Sits inside the rectangle, to the right of the title text, with a small gap to the right edge. A dropdown needs at least 48 px (32 px selector plus padding), so in a taller rectangle (for example 56 px) the slicer is 48 px high and offset down by half the difference, which centres the dropdown on the title text. Padding is set explicitly so the 32 px dropdown fits the rectangle height. Alt text names the field, because the header is hidden. |
 | Size | Same height for every filter (about 48 px at 1080 px page height). The title area and the dropdown have the same widths in every filter, so the dropdowns line up. |
 | Value | The dropdown's own selector box is the inner box, with a chevron at the right. The unfiltered state reads "All". |
 | Layering | Rectangle at the back, slicer on top. Tab order: rectangle first, then slicer. |

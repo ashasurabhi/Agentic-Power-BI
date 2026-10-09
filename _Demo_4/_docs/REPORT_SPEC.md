@@ -7,7 +7,7 @@
 | Inputs | [MODEL_BRIEF.md](MODEL_BRIEF.md), [MODEL_DESIGN.md](MODEL_DESIGN.md), report interview 2026-10-09 |
 | Style reference | [REPORT_STYLE.md](REPORT_STYLE.md) (MIP house style). It applies to every visual here. Where this spec is silent on how something looks, the style standard decides. Exceptions are in section 3.1. |
 | Layout | [REPORT_DESIGN.md](REPORT_DESIGN.md). It predates the style standard, so where the two differ (section 9, item 6) this spec and REPORT_STYLE.md win. |
-| Last updated | 2026-10-09 |
+| Last updated | 2026-10-09 (page built) |
 | Source of truth for DAX and formats | `Campaign Analysis.SemanticModel/definition/tables/_Measures.tmdl`. This spec does not repeat DAX. |
 
 **How to keep this spec current.** A new or changed visual is a row in section 3. A new measure is a row in section 5. A new decision or assumption is a row in section 7. Every change gets a line in section 9. Status values: `Not built`, `Built`, `Changed`.
@@ -38,23 +38,26 @@ Reading order, top to bottom. All visuals respond to S2 to S5. **Week slicer (S1
 
 | ID | Visual | Type | Fields | Visual-level filter | Week slicer (S1) | Status |
 |---|---|---|---|---|---|---|
-| V12 | Page title | Text box | Static text "Weekly overview" | none | n/a | Not built |
-| V13 | Logo | Image | [assets/MIP_logo.png](assets/MIP_logo.png) (1441 × 964 px; has white padding around the mark) | none | n/a | Not built |
-| V1 | Week caption | Text card | `Selected Week Label` | none | n/a (readout) | Not built |
-| V2 | Spend | Card + change callout | `Spend (Selected Week)`; callout `Spend Change vs Previous Week` | none | Applies | Not built |
-| V3 | Revenue | Card + change callout | `Revenue (Selected Week)`; callout `Revenue Change vs Previous Week` | none | Applies | Not built |
-| V4 | ROAS | Card + change callout | `ROAS (Selected Week)`; callout `ROAS Change vs Previous Week` | none | Applies | Not built |
-| V5 | CPA | Card + change callout | `CPA (Selected Week)`; callout `CPA Change vs Previous Week` | none | Applies | Not built |
-| V6 | Active Campaigns | Card + change callout | `Active Campaigns (Selected Week)`; callout `Active Campaigns Change vs Previous Week` | none | Applies | Not built |
-| V7 | Spend and Revenue by week | Line chart, 2 series | Axis `Date[Week Start]`; `Spend`, `Revenue` | `Date[Days In Week]` = 7 | **Off** | Not built |
-| V8 | ROAS by week | Line chart | Axis `Date[Week Start]`; `ROAS` | `Date[Days In Week]` = 7 | **Off** | Not built |
-| V9 | CPA by week | Line chart | Axis `Date[Week Start]`; `CPA` | `Date[Days In Week]` = 7 | **Off** | Not built |
-| V10 | Active Campaigns by week | Line chart | Axis `Date[Week Start]`; `Active Campaigns` | `Date[Days In Week]` = 7 | **Off** | Not built |
-| V11 | Partial-week note | Text box | Static text, below | none | n/a | Not built |
+| V12 | Page title | Text box, centred in the header, 36 px Segoe UI Semibold | Static text "Weekly Overview" (title case) | none | n/a | Built |
+| V14 | Header line | Shape (rectangle, 2 px high, logo green `#008000`), full content width, directly under the header at y = 90 | Decorative | none | n/a | Built |
+| V13 | Logo | Image | [assets/MIP_logo.png](assets/MIP_logo.png) (1441 × 964 px; has white padding around the mark) | none | n/a | Built |
+| V1 | Week caption | Text card | `Selected Week Label` | none | n/a (readout) | Built |
+| V2 | Spend | Card, grouped with a callout card | `Spend (Selected Week)`; callout `Spend Change vs Previous Week` | none | Applies | Built |
+| V3 | Revenue | Card, grouped with a callout card | `Revenue (Selected Week)`; callout `Revenue Change vs Previous Week` | none | Applies | Built |
+| V4 | ROAS | Card, grouped with a callout card | `ROAS (Selected Week)`; callout `ROAS Change vs Previous Week` | none | Applies | Built |
+| V5 | CPA | Card, grouped with a callout card | `CPA (Selected Week)`; callout `CPA Change vs Previous Week` | none | Applies | Built |
+| V6 | Active Campaigns | Card, grouped with a callout card | `Active Campaigns (Selected Week)`; callout `Active Campaigns Change vs Previous Week` | none | Applies | Built |
+| V7 | Spend and Revenue by week | Line chart, 2 series | Axis `Date[Week Start]`; `Spend`, `Revenue` | `Date[Days In Week]` = 7 | **Off** | Built |
+| V8 | ROAS by week | Line chart | Axis `Date[Week Start]`; `ROAS` | `Date[Days In Week]` = 7 | **Off** | Built |
+| V9 | CPA by week | Line chart | Axis `Date[Week Start]`; `CPA` | `Date[Days In Week]` = 7 | **Off** | Built |
+| V10 | Active Campaigns by week | Line chart | Axis `Date[Week Start]`; `Active Campaigns` | `Date[Days In Week]` = 7 | **Off** | Built |
+| V11 | Partial-week note | Text box | Static text, below | none | n/a | Built |
 
 **Notes**
 
-- **V8 and V9 are separate charts**, shown side by side under one heading "ROAS and CPA by week". The scales differ and a line chart has no secondary axis.
+- **V8 and V9 are separate charts**, stacked, each with its own title. The scales differ and a line chart has no secondary axis.
+- **Change callouts are built as a second, transparent card** laid over the lower part of each KPI card and grouped with it (group named after the measure). The card's own reference-label property did not render a callout in Desktop, so it is not used. The callout card binds to the change measure and follows S1 like the card beneath it. It is inset 10 px on the sides and bottom so the KPI card's border stays visible. The "vs LW" (versus last week) text is part of the change measures' format string.
+- **Chart axes:** continuous date axis on `Week Start` with month labels on all four charts. Desktop hides the labels when a chart is too short, so each chart needs about 176 px or more (190 px for V7, V9 and V10, 176 px for V8). V7's Y axis shows the measure's own K/M format (for example "$10,000K") with the visual's display units set to None, because automatic units scaled the value a second time.
 - **Change callout**: percentage change from the previous week, with `▲` for an increase and `▼` for a decrease in the format string (the minus sign is dropped). One neutral colour, no up/down colouring, because direction is not good or bad (a rise in CPA is a cost rise, a rise in Spend is neither). Blank when there is no previous week or its value is zero.
 - **Chart axis** is `Week Start` (date axis), not `Week Label`, so weeks sit on an even time scale.
 - **V11 text**: "The charts show full Monday-to-Sunday weeks only. The first week (Fri 1 Jan to Sun 3 Jan 2021, 3 days) and the last week (Mon 24 Jan to Fri 28 Jan 2022, 5 days) are partial and are left off the charts. They are still in the Week slicer, and their totals are low for that reason. Ratios are less affected." If the data refreshes with new dates, update the dates in this text.
@@ -66,7 +69,7 @@ Each row says which part of [REPORT_STYLE.md](REPORT_STYLE.md) governs the eleme
 
 | Element | Style rule | Exception or choice on this page |
 |---|---|---|
-| All visuals and slicers | Container, 6.1: 1 px `#D5D5D5` border, 4 px radius, no shadow, title inside top left | The four charts V7 to V10 are one group: no border and no fill, with a title inside each (6.1, last point). |
+| All visuals and slicers | Container, 6.1: 1 px `#D5D5D5` border, 6 px radius, no shadow, title inside top left | The four charts V7 to V10 have the same container as the cards: 1 px `#D5D5D5` border, 6 px radius, white fill, title inside. |
 | V12 Page title | Section 2: top left, regular, `#252423` | None. |
 | V13 Logo | Section 2: top right, about 7% of page height, no recolour | None. |
 | V2 to V6 cards | 6.3: grey `#E6E6E6` title band with the label centred; large centred value on white; equal sizes | The change callout sits under the value in 15 px secondary text `#605E5C`, centred, one neutral colour (the rule in 6.3). |
@@ -75,20 +78,20 @@ Each row says which part of [REPORT_STYLE.md](REPORT_STYLE.md) governs the eleme
 | Series colours | Section 4: blue `#118DFF` first, navy `#12239E` second | V7: Revenue blue, Spend navy. V8, V9, V10: one series, blue. |
 | S1 to S5 slicers | 6.2: dropdown, label inside the box, "All" when clear, `#B0B6DE` border | S1 is single select; S2 to S5 are multi-select. Search on for S1 (57 weeks). |
 | V11 note | 6.8: 11 to 12 px secondary text, below the charts | None. |
-| Number formats | Style rule 9: from the model | The change callouts use the format string on the measure (`▲ 0.0%;▼ 0.0%;0.0%`). |
+| Number formats | Style rule 9: from the model | The change callouts use the format string on the measure (`▲ 0.0% vs LW;▼ 0.0% vs LW;0.0% vs LW`). |
 | Tables | 6.4 | None on this page. |
 
 ## 4. Slicers and filters
 
-All five are dropdowns. S2 to S5 sit together in one row at the top, in this order: Company, Campaign Type, Channel, Customer Segment. S1 sits with the cards, not in that row, because it affects only the cards ([REPORT_STYLE.md](REPORT_STYLE.md), section 3, rule 4), and its title reads "Week (cards only)".
+All five are dropdowns in **one row** just below the header line (y = 104), in this order: Company, Campaign Type, Channel, Customer Segment, Week. S1 is in the row at your request, even though it affects only the cards ([REPORT_STYLE.md](REPORT_STYLE.md), section 3, rule 4 would place it with the cards). Its title reads "Week (cards only)" so the difference is clear. Each box is 348 px wide: a 150 px title area and a 190 px dropdown.
 
 | ID | Slicer | Field | Selection | Affects | Status |
 |---|---|---|---|---|---|
-| S1 | Week | `Date[Week Label]` (sorted by `Week Start`) | Single select, **selection not required** | Cards V1 to V6 only. Edit interactions to V7 to V10: off. | Not built |
-| S2 | Company | `Campaign[Company]` | Multi-select | All visuals | Not built |
-| S3 | Campaign Type | `Campaign[Campaign_Type]` | Multi-select | All visuals; narrows S4 | Not built |
-| S4 | Channel | `Campaign[Channel_Used]` | Multi-select, cascades from S3 by leaving the default interaction between S3 and S4 on | All visuals | Not built |
-| S5 | Customer Segment | `Campaign[Customer_Segment]` | Multi-select | All visuals | Not built |
+| S1 | Week | `Date[Week Label]` (sorted by `Week Start`) | Single select, **selection not required** | Cards V1 to V6 only. Edit interactions to V7 to V10: off. | Built |
+| S2 | Company | `Campaign[Company]` | Multi-select | All visuals | Built |
+| S3 | Campaign Type | `Campaign[Campaign_Type]` | Multi-select | All visuals; narrows S4 | Built |
+| S4 | Channel | `Campaign[Channel_Used]` | Multi-select, cascades from S3 by leaving the default interaction between S3 and S4 on | All visuals | Built |
+| S5 | Customer Segment | `Campaign[Customer_Segment]` | Multi-select | All visuals | Built |
 
 Instagram appears under two types and YouTube under two types. Choosing a channel with no type selected includes both types. That is correct.
 
@@ -120,7 +123,7 @@ All are in `_Measures`. DAX and format strings are in the TMDL.
 | `ROAS (Selected Week)` | ROAS for the selected week. | V4 |
 | `CPA (Selected Week)` | CPA for the selected week. | V5 |
 | `Active Campaigns (Selected Week)` | Active Campaigns for the selected week. | V6 |
-| `Spend Change vs Previous Week` | Percentage change; format `▲ 0.0%;▼ 0.0%;0.0%`. | V2 |
+| `Spend Change vs Previous Week` | Percentage change; format `▲ 0.0% vs LW;▼ 0.0% vs LW;0.0% vs LW`. | V2 |
 | `Revenue Change vs Previous Week` | As above. | V3 |
 | `ROAS Change vs Previous Week` | As above. | V4 |
 | `CPA Change vs Previous Week` | As above. | V5 |
@@ -156,6 +159,13 @@ All are in `_Measures`. DAX and format strings are in the TMDL.
 | 11 | V7 uses navy for Spend and blue for Revenue (the style's second-series colour), not the grey in REPORT_DESIGN.md. | **Assumption** |
 | 12 | No markers and no data labels on V7 to V10, because 55 points would crowd. The style standard shows markers and selected labels. | **Assumption** |
 | 13 | The logo is `assets/MIP_logo.png` (the supplied file, renamed). | Confirmed (2026-10-09) |
+| 15 | Each filter is a group: a rounded rectangle titled with the filter name (6 px visual border) plus the native dropdown slicer with its header hidden, 56 px high. Built this way to match the existing MIP report. | Confirmed (2026-10-09) |
+| 16 | The Week slicer uses "Multi-select with CTRL" (`singleSelect`), not "Single select" (`strictSingleSelect`). The strict form forces a selection and would pick the newest week, the partial 24 Jan 2022, which breaks the default (item 9). A Ctrl-click can add a second week; the measures then fall back to the latest full week. | **Assumption** |
+| 18 | All five filters are in one row (S1 included). | Confirmed (2026-10-09) |
+| 19 | **The page was moved in Desktop after the build.** Chart positions are now a two-column arrangement you set (V7 and V9 left, V8 and V10 right). The files are the source of truth. The generator script is out of date and must not be rerun, or it will overwrite your placement. | Constraint |
+| 21 | Header: title centred and larger ("Weekly Overview", 36 px), a 2 px grey line under the header at y = 90, filter row moved down to y = 104 so it clears the logo, week caption moved to y = 168. | Confirmed (2026-10-09) |
+| 20 | Chart heights were raised only as far as the date labels need: V7 190, V8 176, V9 190, V10 190. Positions were not changed. | **Assumption** |
+| 17 | Card values use Segoe UI Semibold, not DIN, because DIN did not render in this Desktop (fell back to a serif font). Card display units are set to None so the measure's own K/M format applies. | **Assumption** |
 | 14 | The slicer, card change line and notes rules in REPORT_STYLE.md (sections 6.2, 6.3 and 6.8) are used here as written. They were not seen in the source screenshot, so they are not confirmed against a live MIP report. | **Assumption** |
 
 ## 8. Traceability: brief questions to pages
@@ -171,17 +181,24 @@ All are in `_Measures`. DAX and format strings are in the TMDL.
 
 | # | Item | Action |
 |---|---|---|
-| 1 | The report has one page, named "Page 1", with two tables that are not in this spec: a campaign-type ROAS rank table and a channel-rank-within-type table. They relate to Q1, which is not in this build. | Decide whether to remove them or move them to a later Q1 page. Rename the page "Weekly overview". |
+| 1 | The two Q1 tables on the old "Page 1". | **Resolved 2026-10-09.** Deleted by you; the page is now "Weekly overview" (page folder `b37c668e8890066b493a`). |
 | 2 | MODEL_DESIGN.md says the first week has 4 days. It has 3 (checked against `Days In Week`). | Correct MODEL_DESIGN.md. |
 | 3 | The default week (17 Jan 2022) shows large falls against 10 Jan: Spend ▼ 49.8%, Active Campaigns ▼ 48.8%. The week is full, so this is not a partial-week effect. Campaigns are ending in the final weeks of the file. V11 covers partial weeks only. | Decide whether V11 should also say that the final weeks of the file are low because campaigns are ending. |
-| 4 | The arrow format string has not been checked in a rendered card. | Check when V2 to V6 are built. |
+| 4 | The arrow format string. | **Resolved 2026-10-09.** ▲ and ▼ render in the callout cards. |
 | 5 | The logo file `assets/MIP_logo.png` has white padding around the mark. | Optionally trim the padding before building V13. |
 | 6 | REPORT_DESIGN.md differs from the style standard on: Spend colour on V7 (grey, not navy), card layout (left aligned, white, not a centred title band), table rule (section 4, rule 8), and slicer placement (S1 in the filter strip area). It has no logo or page-title rule. | Update REPORT_DESIGN.md to match this spec. |
-| 7 | The card-value font is unconfirmed (REPORT_STYLE.md, section 9). | Take it from the original MIP report. |
+| 7 | The card-value font is unconfirmed (REPORT_STYLE.md, section 9). Segoe UI Semibold is used. | Take it from the original MIP report. |
+| 8 | **Not click-tested.** The build was checked at the default state only (screenshots and values). Choosing a week, choosing filters, the Type-to-Channel cascade, and "clicking a chart changes nothing" were not exercised, because the preview tool cannot click. | Try these in Desktop (REPORT_BUILD.md, section 5). |
+| 9 | The report validator could not fetch the online JSON schema, so it skipped schema checks. Role, property and reference checks did run, with no errors. | Re-run validate when the schema is reachable. |
+| 10 | V7's Y axis reads "$10,000K", "$5,000K", "$0K". The charts are not aligned to a common right edge: the Active Campaigns chart ends about 8 px before the ROAS chart above it. | Cosmetic. Align when the final layout is chosen. |
+| 11 | The default week shows large falls (see item 3). The page note still covers partial weeks only. | Unchanged; decide on the wording of V11. |
 
 ## 10. Change log
 
 | Date | Change |
 |---|---|
+| 2026-10-09 | Header: centred title in title case, header line (V14), filter row and caption moved down; slicers centred in their boxes (decision 21). |
+| 2026-10-09 | Filters in one row; borders and X axes on all four charts; "vs LW" on the callouts; callout cards inset; chart heights raised for labels; decisions 18 to 20. |
+| 2026-10-09 | Page built and checked in Desktop (REPORT_BUILD.md, section 8): all visuals and slicers marked Built; callouts built as grouped overlay cards; decisions 15 to 17; known issues 1, 4 resolved, 8 to 11 added. |
 | 2026-10-09 | Adopted REPORT_STYLE.md as the style reference: added the style row, section 3.1, page title (V12) and logo (V13), dropdown slicers, and decisions 10 to 14. |
 | 2026-10-09 | Spec created from interview. Added arrows to callouts; charts changed to full weeks only; 13 measures built and saved; spec restructured as a maintained register. |
