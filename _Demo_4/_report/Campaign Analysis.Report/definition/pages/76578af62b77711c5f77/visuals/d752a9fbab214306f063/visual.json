@@ -1,0 +1,129 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "d752a9fbab214306f063",
+  "position": {
+    "x": 150,
+    "y": 518.33333333333337,
+    "z": 1,
+    "height": 368.33333333333337,
+    "width": 786.66666666666674,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Campaign"
+                    }
+                  },
+                  "Property": "Campaign_Type"
+                }
+              },
+              "queryRef": "Campaign.Campaign_Type",
+              "nativeQueryRef": "Campaign_Type"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Campaign"
+                    }
+                  },
+                  "Property": "Channel_Used"
+                }
+              },
+              "queryRef": "Campaign.Channel_Used",
+              "nativeQueryRef": "Channel_Used"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "ROAS Rank in Type"
+                }
+              },
+              "queryRef": "_Measures.ROAS Rank in Type",
+              "nativeQueryRef": "ROAS Rank in Type"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Campaign"
+                  }
+                },
+                "Property": "Campaign_Type"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "b65c7069a20788829620",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Campaign"
+              }
+            },
+            "Property": "Channel_Used"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "2b6a50fb75b23f0890b5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "ROAS Rank in Type"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c6ecab34f9651f6f5ea2",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Campaign"
+              }
+            },
+            "Property": "Campaign_Type"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

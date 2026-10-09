@@ -168,6 +168,115 @@ table _Measures
 		formatString: 0
 		lineageTag: afaf5cad-ea35-4cce-a127-ab1b2c27bb5c
 
+	/// Monday of the latest week that has all 7 days in the Date table. Found from the data, not hard coded. Ignores the Week slicer. The partial last week is not used.
+	measure 'Latest Full Week Start' = CALCULATE ( MAX ( 'Date'[Week Start] ), REMOVEFILTERS ( 'Date' ), 'Date'[Days In Week] = 7 )
+		formatString: dd/MM/yyyy
+		lineageTag: 48564da4-07c1-46ce-84fe-121257dfc08d
+
+	/// Monday of the week chosen in the Week slicer, or the latest full week when no week is chosen. Used by the selected-week and change measures.
+	measure 'Selected Week Start' = COALESCE ( SELECTEDVALUE ( 'Date'[Week Start] ), [Latest Full Week Start] )
+		formatString: dd/MM/yyyy
+		lineageTag: 943a13ab-95c9-408c-9236-69a2b605bb21
+
+	/// Text caption saying which week the cards show and which week they are compared with.
+	measure 'Selected Week Label' =
+			VAR _week = [Selected Week Start]
+			VAR _first = CALCULATE ( MIN ( 'Date'[Date] ), REMOVEFILTERS ( 'Date' ) )
+			RETURN
+			    "Week of " & FORMAT ( _week, "dd mmm yyyy" ) & " to " & FORMAT ( _week + 6, "dd mmm yyyy" )
+			        & IF (
+			            _week - 7 < _first - WEEKDAY ( _first, 2 ) + 1,
+			            ". No earlier week in the data.",
+			            ", compared with the week of " & FORMAT ( _week - 7, "dd mmm yyyy" )
+			        )
+		lineageTag: 6762742f-267a-40d4-9305-a208ddc4c953
+
+	/// Spend for the selected week (latest full week when none is chosen). Ignores the Week slicer; other filters apply.
+	measure 'Spend (Selected Week)' =
+			VAR _week = [Selected Week Start]
+			RETURN CALCULATE ( [Spend], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+		lineageTag: 66d3d530-29e8-40dd-a471-71c062b38795
+
+		formatStringDefinition =
+				VAR _v = ABS ( [Spend (Selected Week)] )
+				RETURN SWITCH ( TRUE (), _v >= 1000000, "$#,0,,.0\M", _v >= 1000, "$#,0,.0\K", "$#,##0.00" )
+
+	/// Revenue for the selected week (latest full week when none is chosen). Treated as gross, as recorded. Ignores the Week slicer; other filters apply.
+	measure 'Revenue (Selected Week)' =
+			VAR _week = [Selected Week Start]
+			RETURN CALCULATE ( [Revenue], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+		lineageTag: 217daaed-af8c-4550-8adf-fa94f99dc60c
+
+		formatStringDefinition =
+				VAR _v = ABS ( [Revenue (Selected Week)] )
+				RETURN SWITCH ( TRUE (), _v >= 1000000, "$#,0,,.0\M", _v >= 1000, "$#,0,.0\K", "$#,##0.00" )
+
+	/// ROAS (Revenue divided by Spend) for the selected week, calculated from that week's summed Revenue and Spend. Not profit.
+	measure 'ROAS (Selected Week)' =
+			VAR _week = [Selected Week Start]
+			RETURN CALCULATE ( [ROAS], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+		formatString: 0.00
+		lineageTag: d565b3bb-54cf-4d26-8b63-f1b332f32395
+
+	/// Cost per acquisition (Spend divided by Conversions) for the selected week. Spend per purchase, not a customer acquisition cost.
+	measure 'CPA (Selected Week)' =
+			VAR _week = [Selected Week Start]
+			RETURN CALCULATE ( [CPA], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+		formatString: $#,##0.00
+		lineageTag: 8cdb35be-f5e6-4d22-b166-f0dea16476dc
+
+	/// Distinct campaigns with at least one row in the selected week.
+	measure 'Active Campaigns (Selected Week)' =
+			VAR _week = [Selected Week Start]
+			RETURN CALCULATE ( [Active Campaigns], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+		formatString: #,##0
+		lineageTag: 01ba2bfe-59bd-4348-b414-1e53d4e02d30
+
+	/// Percentage change in Spend from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero. A partial week gives a misleading change.
+	measure 'Spend Change vs Previous Week' =
+			VAR _week = [Selected Week Start]
+			VAR _current = CALCULATE ( [Spend], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+			VAR _previous = CALCULATE ( [Spend], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
+			RETURN DIVIDE ( _current - _previous, _previous )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		lineageTag: 53398d8e-ff71-42a4-b075-1152f84b42d9
+
+	/// Percentage change in Revenue from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero. A partial week gives a misleading change.
+	measure 'Revenue Change vs Previous Week' =
+			VAR _week = [Selected Week Start]
+			VAR _current = CALCULATE ( [Revenue], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+			VAR _previous = CALCULATE ( [Revenue], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
+			RETURN DIVIDE ( _current - _previous, _previous )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		lineageTag: 322b7f8a-abb4-42cc-aad4-0c7e641d55e4
+
+	/// Percentage change in ROAS from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero.
+	measure 'ROAS Change vs Previous Week' =
+			VAR _week = [Selected Week Start]
+			VAR _current = CALCULATE ( [ROAS], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+			VAR _previous = CALCULATE ( [ROAS], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
+			RETURN DIVIDE ( _current - _previous, _previous )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		lineageTag: b3134861-ef34-483d-bd72-6344b602d61e
+
+	/// Percentage change in CPA from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero.
+	measure 'CPA Change vs Previous Week' =
+			VAR _week = [Selected Week Start]
+			VAR _current = CALCULATE ( [CPA], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+			VAR _previous = CALCULATE ( [CPA], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
+			RETURN DIVIDE ( _current - _previous, _previous )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		lineageTag: da8842c2-8821-4dbc-995d-bcb1d7de8fae
+
+	/// Percentage change in Active Campaigns from the previous week to the selected week. Direction only, not a verdict. Blank when there is no previous week or it is zero. A partial week gives a misleading change.
+	measure 'Active Campaigns Change vs Previous Week' =
+			VAR _week = [Selected Week Start]
+			VAR _current = CALCULATE ( [Active Campaigns], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week )
+			VAR _previous = CALCULATE ( [Active Campaigns], REMOVEFILTERS ( 'Date' ), 'Date'[Week Start] = _week - 7 )
+			RETURN DIVIDE ( _current - _previous, _previous )
+		formatString: ▲ 0.0%;▼ 0.0%;0.0%
+		lineageTag: 7b4f6c47-2882-468d-be9b-b8c7e5c89f08
+
 	column Placeholder
 		dataType: int64
 		isHidden
