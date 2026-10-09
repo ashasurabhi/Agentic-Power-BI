@@ -5,6 +5,8 @@
 | Report | `_Demo_4/_report/Campaign Analysis.pbip` |
 | Scope of this build | One page: Weekly overview (answers Q4). Q1 to Q3 are not in this build. |
 | Inputs | [MODEL_BRIEF.md](MODEL_BRIEF.md), [MODEL_DESIGN.md](MODEL_DESIGN.md), report interview 2026-10-09 |
+| Style reference | [REPORT_STYLE.md](REPORT_STYLE.md) (MIP house style). It applies to every visual here. Where this spec is silent on how something looks, the style standard decides. Exceptions are in section 3.1. |
+| Layout | [REPORT_DESIGN.md](REPORT_DESIGN.md). It predates the style standard, so where the two differ (section 9, item 6) this spec and REPORT_STYLE.md win. |
 | Last updated | 2026-10-09 |
 | Source of truth for DAX and formats | `Campaign Analysis.SemanticModel/definition/tables/_Measures.tmdl`. This spec does not repeat DAX. |
 
@@ -24,7 +26,8 @@
 
 ## 2. Rules for the page
 
-- No targets, benchmarks, flags or judging colours. Arrows, deltas and lines use one neutral colour.
+- No targets, benchmarks, flags or judging colours. Arrows and deltas use one neutral colour. Chart series use the style standard's blue and navy, which carry no good or bad meaning.
+- Follow [REPORT_STYLE.md](REPORT_STYLE.md) for colour, type, containers, slicers, cards and charts. Do not use its status bands or bullet charts on this page.
 - Do not use "efficient", "underperforming", "on track", "typical" or "CAC" in any title, label or note.
 - `$` only. No currency code.
 - Charts show full Monday-to-Sunday weeks only (V7 to V10). Cards and the Week slicer can show partial weeks.
@@ -35,6 +38,8 @@ Reading order, top to bottom. All visuals respond to S2 to S5. **Week slicer (S1
 
 | ID | Visual | Type | Fields | Visual-level filter | Week slicer (S1) | Status |
 |---|---|---|---|---|---|---|
+| V12 | Page title | Text box | Static text "Weekly overview" | none | n/a | Not built |
+| V13 | Logo | Image | [assets/MIP_logo.png](assets/MIP_logo.png) (1441 × 964 px; has white padding around the mark) | none | n/a | Not built |
 | V1 | Week caption | Text card | `Selected Week Label` | none | n/a (readout) | Not built |
 | V2 | Spend | Card + change callout | `Spend (Selected Week)`; callout `Spend Change vs Previous Week` | none | Applies | Not built |
 | V3 | Revenue | Card + change callout | `Revenue (Selected Week)`; callout `Revenue Change vs Previous Week` | none | Applies | Not built |
@@ -55,7 +60,27 @@ Reading order, top to bottom. All visuals respond to S2 to S5. **Week slicer (S1
 - **V11 text**: "The charts show full Monday-to-Sunday weeks only. The first week (Fri 1 Jan to Sun 3 Jan 2021, 3 days) and the last week (Mon 24 Jan to Fri 28 Jan 2022, 5 days) are partial and are left off the charts. They are still in the Week slicer, and their totals are low for that reason. Ratios are less affected." If the data refreshes with new dates, update the dates in this text.
 - No data labels. Tooltips show the week and value.
 
+### 3.1 Style applied
+
+Each row says which part of [REPORT_STYLE.md](REPORT_STYLE.md) governs the element, and any exception for this page.
+
+| Element | Style rule | Exception or choice on this page |
+|---|---|---|
+| All visuals and slicers | Container, 6.1: 1 px `#D5D5D5` border, 4 px radius, no shadow, title inside top left | The four charts V7 to V10 are one group: no border and no fill, with a title inside each (6.1, last point). |
+| V12 Page title | Section 2: top left, regular, `#252423` | None. |
+| V13 Logo | Section 2: top right, about 7% of page height, no recolour | None. |
+| V2 to V6 cards | 6.3: grey `#E6E6E6` title band with the label centred; large centred value on white; equal sizes | The change callout sits under the value in 15 px secondary text `#605E5C`, centred, one neutral colour (the rule in 6.3). |
+| V1 caption | 6.8 notes: 12 px to 14 px secondary text, left aligned, no border | None. |
+| V7 to V10 line charts | 6.6: 2 px line, legend top left, axis titles, light gridlines `#EEEEEE`, date axis | **No markers** (55 points) and **no data labels** (the cards give the latest value). Series colour: see below. |
+| Series colours | Section 4: blue `#118DFF` first, navy `#12239E` second | V7: Revenue blue, Spend navy. V8, V9, V10: one series, blue. |
+| S1 to S5 slicers | 6.2: dropdown, label inside the box, "All" when clear, `#B0B6DE` border | S1 is single select; S2 to S5 are multi-select. Search on for S1 (57 weeks). |
+| V11 note | 6.8: 11 to 12 px secondary text, below the charts | None. |
+| Number formats | Style rule 9: from the model | The change callouts use the format string on the measure (`▲ 0.0%;▼ 0.0%;0.0%`). |
+| Tables | 6.4 | None on this page. |
+
 ## 4. Slicers and filters
+
+All five are dropdowns. S2 to S5 sit together in one row at the top, in this order: Company, Campaign Type, Channel, Customer Segment. S1 sits with the cards, not in that row, because it affects only the cards ([REPORT_STYLE.md](REPORT_STYLE.md), section 3, rule 4), and its title reads "Week (cards only)".
 
 | ID | Slicer | Field | Selection | Affects | Status |
 |---|---|---|---|---|---|
@@ -127,6 +152,11 @@ All are in `_Measures`. DAX and format strings are in the TMDL.
 | 7 | No minimum campaigns or spend before a ratio is shown. With a narrow filter a week can swing widely (brief, open item 4). | Inherited |
 | 8 | V1 caption wording. | Not reviewed |
 | 9 | S1 must not require a selection, or the latest-full-week default stops applying. | Constraint |
+| 10 | The page follows [REPORT_STYLE.md](REPORT_STYLE.md). | Confirmed (2026-10-09) |
+| 11 | V7 uses navy for Spend and blue for Revenue (the style's second-series colour), not the grey in REPORT_DESIGN.md. | **Assumption** |
+| 12 | No markers and no data labels on V7 to V10, because 55 points would crowd. The style standard shows markers and selected labels. | **Assumption** |
+| 13 | The logo is `assets/MIP_logo.png` (the supplied file, renamed). | Confirmed (2026-10-09) |
+| 14 | The slicer, card change line and notes rules in REPORT_STYLE.md (sections 6.2, 6.3 and 6.8) are used here as written. They were not seen in the source screenshot, so they are not confirmed against a live MIP report. | **Assumption** |
 
 ## 8. Traceability: brief questions to pages
 
@@ -145,9 +175,13 @@ All are in `_Measures`. DAX and format strings are in the TMDL.
 | 2 | MODEL_DESIGN.md says the first week has 4 days. It has 3 (checked against `Days In Week`). | Correct MODEL_DESIGN.md. |
 | 3 | The default week (17 Jan 2022) shows large falls against 10 Jan: Spend ▼ 49.8%, Active Campaigns ▼ 48.8%. The week is full, so this is not a partial-week effect. Campaigns are ending in the final weeks of the file. V11 covers partial weeks only. | Decide whether V11 should also say that the final weeks of the file are low because campaigns are ending. |
 | 4 | The arrow format string has not been checked in a rendered card. | Check when V2 to V6 are built. |
+| 5 | The logo file `assets/MIP_logo.png` has white padding around the mark. | Optionally trim the padding before building V13. |
+| 6 | REPORT_DESIGN.md differs from the style standard on: Spend colour on V7 (grey, not navy), card layout (left aligned, white, not a centred title band), table rule (section 4, rule 8), and slicer placement (S1 in the filter strip area). It has no logo or page-title rule. | Update REPORT_DESIGN.md to match this spec. |
+| 7 | The card-value font is unconfirmed (REPORT_STYLE.md, section 9). | Take it from the original MIP report. |
 
 ## 10. Change log
 
 | Date | Change |
 |---|---|
+| 2026-10-09 | Adopted REPORT_STYLE.md as the style reference: added the style row, section 3.1, page title (V12) and logo (V13), dropdown slicers, and decisions 10 to 14. |
 | 2026-10-09 | Spec created from interview. Added arrows to callouts; charts changed to full weeks only; 13 measures built and saved; spec restructured as a maintained register. |
